@@ -13,7 +13,9 @@ reneo.Flipperen.Main = (function () {
 			space,
 			raf,
 			startTs,
-			balls = [];
+			balls = [],
+			staticBall,
+			staticBallImage;
 			
         function init() {
 			container = $(theContainer);
@@ -54,6 +56,15 @@ reneo.Flipperen.Main = (function () {
 			for (let ball of balls) {
 				ball.updateDomPosition();
 			}
+			
+			let arbiters = space.arbiters;
+			for (let arbiter of arbiters) {
+				let nrContacts = arbiter.contacts.length;
+				if (arbiter.a == staticBall.ballCollisionShape || arbiter.b == staticBall.ballCollisionShape) {
+					space.removeShape(staticBall.ballCollisionShape);
+					staticBallImage.fadeOut(200, 'linear', function() { staticBallImage.remove(); });
+				}
+			}
 		}
 		
 		function go() {
@@ -64,6 +75,17 @@ reneo.Flipperen.Main = (function () {
 			space.collisionSlop = 0.5;
 			
 			addFloor();
+			
+			staticBallImage = createBallImage();
+			container.append(staticBallImage);
+			
+			let staticBallShape = space.addShape(new cp.CircleShape(space.staticBody, Ball.radius, v(64, 64)));
+			staticBallShape.setElasticity(1);
+			staticBallShape.setFriction(1);
+			staticBallShape.setLayers(NOT_GRABABLE_MASK);
+			
+			staticBall = new StaticBall(staticBallImage, staticBallShape);
+			staticBall.updateDomPosition();
 
 			for (let i = 1; i < 10; i++ ) {
 				let ballImage = createBallImage();

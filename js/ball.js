@@ -16,7 +16,6 @@ class Ball {
 	updateDomPosition() {
 		let newPos = this.ballBody.getPos();
 		this.ballImage.css({ 'transform' : `translate(${newPos.x}px, ${640-newPos.y}px) rotate(${this.getAngle()}rad)` });
-		
 	}
 	
 	setPos(pos) {
