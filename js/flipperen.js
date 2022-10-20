@@ -102,6 +102,26 @@ reneo.Flipperen.Main = (function () {
 				
 				newBall.setPos(v(200 + i*30, 300+ (2 * (Ball.radius*1) + 5) * i));
 			}
+			
+			// add flipper
+			let flipper = $('<svg height="20" width="160"><polygon points="160,0 0,0 160,20" style="fill:blue;stroke:purple;stroke-width:1" /></svg>');
+			let leftFlipPos = v(110,195);
+			flipper.css({ 'transform' : `translate(${leftFlipPos.x}px, ${640-leftFlipPos.y}px) rotate(0deg)` });
+			
+			let tris = [
+                cp.v(160, 0),
+                cp.v(0, 0),
+                cp.v(160, 20)
+            ];
+			
+			let polyMass = 1.0;
+			let flipperBody = space.addBody(new cp.Body(polyMass, cp.momentForPoly(1.0, tris, v(80,10))));
+			//flipperBody.setPos(v(100, 200));
+			let flipperShape = space.addShape(new cp.PolyShape(space.staticBody, tris, v(100, 200))); 
+			flipperShape.setElasticity(1);
+			flipperShape.setFriction(1);
+
+			container.append(flipper);	
 							
 			window.requestAnimationFrame(step);
 		}
