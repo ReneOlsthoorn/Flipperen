@@ -15,7 +15,9 @@ reneo.Flipperen.Main = (function () {
 			startTs,
 			balls = [],
 			staticBall,
-			staticBallImage;
+			staticBallImage,
+			flipperBody,
+			flipper;
 			
         function init() {
 			container = $(theContainer);
@@ -65,6 +67,10 @@ reneo.Flipperen.Main = (function () {
 					staticBallImage.fadeOut(200, 'linear', function() { staticBallImage.remove(); });
 				}
 			}
+			//console.log(flipperBody.getPos());
+			let leftFlipPos = flipperBody.getPos();
+			flipper.css({ 'transform' : `translate(${leftFlipPos.x}px, ${640-leftFlipPos.y}px) rotate(0deg)` });
+			//flipperBody.setPos(v(100, 200));
 		}
 		
 		function go() {
@@ -104,22 +110,22 @@ reneo.Flipperen.Main = (function () {
 			}
 			
 			// add flipper
-			let flipper = $('<svg height="20" width="160"><polygon points="160,0 0,0 160,20" style="fill:blue;stroke:purple;stroke-width:1" /></svg>');
+			flipper = $('<svg height="60" width="160"><polygon points="0,0 160,60 160,0" style="fill:blue;stroke:purple;stroke-width:1" /></svg>');
 			let leftFlipPos = v(110,195);
 			flipper.css({ 'transform' : `translate(${leftFlipPos.x}px, ${640-leftFlipPos.y}px) rotate(0deg)` });
 			
 			let tris = [
-                cp.v(160, 0),
-                cp.v(0, 0),
-                cp.v(160, 20)
+                cp.v(0, 60),
+                cp.v(160, 60),
+                cp.v(160, 0)
             ];
 			
 			let polyMass = 1.0;
-			let flipperBody = space.addBody(new cp.Body(polyMass, cp.momentForPoly(1.0, tris, v(80,10))));
-			//flipperBody.setPos(v(100, 200));
-			let flipperShape = space.addShape(new cp.PolyShape(space.staticBody, tris, v(100, 200))); 
+			flipperBody = space.addBody(new cp.Body(polyMass, cp.momentForPoly(1.0, tris, v(0,0))));
+			let flipperShape = space.addShape(new cp.PolyShape(flipperBody, tris, v(0,0))); //space.staticBody     v(95, 150)
 			flipperShape.setElasticity(1);
 			flipperShape.setFriction(1);
+			flipperBody.setPos(v(100, 200));
 
 			container.append(flipper);	
 							
