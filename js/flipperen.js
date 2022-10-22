@@ -114,8 +114,6 @@ reneo.Flipperen.Main = (function () {
 			
 			// add flipper
 			flipper = $('<svg height="60" width="160"><polygon points="0,0 160,60 160,0" style="fill:blue;stroke:purple;stroke-width:1" /></svg>');
-			let leftFlipPos = v(110,195);
-			flipper.css({ 'transform' : `translate(${leftFlipPos.x}px, ${640-leftFlipPos.y}px) rotate(0deg)` });
 			
 			let tris = [
                 cp.v(0, 60),
@@ -129,6 +127,14 @@ reneo.Flipperen.Main = (function () {
 			flipperShape.setElasticity(1);
 			flipperShape.setFriction(1);
 			flipperBody.setPos(v(100, 200));
+			
+			//this.planetBody = new cp.Body(Infinity, Infinity);
+			//r_flipper_joint_body.position = r_flipper_body.position
+			//j = pymunk.PinJoint(r_flipper_body, r_flipper_joint_body, (0, 0), (0, 0))
+			//s = pymunk.DampedRotarySpring(
+			//	r_flipper_body, r_flipper_joint_body, 0.15, 20000000, 900000
+			//)	
+//space.add(j, s)			
 
 			container.append(flipper);	
 							
