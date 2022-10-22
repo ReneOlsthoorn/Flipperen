@@ -69,7 +69,10 @@ reneo.Flipperen.Main = (function () {
 			}
 			//console.log(flipperBody.getPos());
 			let leftFlipPos = flipperBody.getPos();
-			flipper.css({ 'transform' : `translate(${leftFlipPos.x}px, ${640-leftFlipPos.y}px) rotate(0deg)` });
+			let vel = flipperBody.rot;
+			let angle = 2*Math.PI - cp.v.toangle(vel);
+			
+			flipper.css({ 'transform' : `translate(${leftFlipPos.x}px, ${640-leftFlipPos.y}px) rotate(${angle}rad)` });
 			//flipperBody.setPos(v(100, 200));
 		}
 		
