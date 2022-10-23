@@ -17,7 +17,9 @@ reneo.Flipperen.Main = (function () {
 			staticBall,
 			staticBallImage,
 			flipperBody,
-			flipper;
+			flipper,
+			flipperJointBody,
+			flipperPinJoint;
 			
         function init() {
 			container = $(theContainer);
@@ -74,6 +76,8 @@ reneo.Flipperen.Main = (function () {
 			
 			flipper.css({ 'transform' : `translate(${leftFlipPos.x}px, ${640-leftFlipPos.y}px) rotate(${angle}rad)` });
 			//flipperBody.setPos(v(100, 200));
+			let flipperJointPos = flipperJointBody.getPos();
+			console.log(flipperJointPos);
 		}
 		
 		function go() {
@@ -123,18 +127,19 @@ reneo.Flipperen.Main = (function () {
 			
 			let polyMass = 1.0;
 			flipperBody = space.addBody(new cp.Body(polyMass, cp.momentForPoly(1.0, tris, v(0,0))));
-			let flipperShape = space.addShape(new cp.PolyShape(flipperBody, tris, v(0,0))); //space.staticBody     v(95, 150)
-			flipperShape.setElasticity(1);
-			flipperShape.setFriction(1);
 			flipperBody.setPos(v(100, 200));
 			
-			//this.planetBody = new cp.Body(Infinity, Infinity);
-			//r_flipper_joint_body.position = r_flipper_body.position
-			//j = pymunk.PinJoint(r_flipper_body, r_flipper_joint_body, (0, 0), (0, 0))
-			//s = pymunk.DampedRotarySpring(
-			//	r_flipper_body, r_flipper_joint_body, 0.15, 20000000, 900000
-			//)	
-//space.add(j, s)			
+			//let flipperShape = space.addShape(new cp.PolyShape(flipperBody, tris, v(0,0))); //space.staticBody     v(95, 150)
+			let flipperShape = space.addShape(new cp.PolyShape(space.staticBody, tris, v(95, 150))); //space.staticBody     v(95, 150)
+			flipperShape.setElasticity(0.4);
+			flipperShape.setFriction(1);
+			//flipperBody.setPos(v(100, 200));
+			
+			flipperJointBody = space.addBody(new cp.Body(Infinity, Infinity));
+			flipperJointBody.setPos(flipperBody.getPos());
+			flipperPinJoint = new cp.PinJoint(space.staticBody, flipperBody, cp.v(0,0), cp.v(0,0));
+			space.addConstraint(flipperPinJoint);
+			//space.addConstraint(new cp.DampedRotarySpring(flipperBody, flipperJointBody, 0.15, 20000000, 900000));
 
 			container.append(flipper);	
 							
