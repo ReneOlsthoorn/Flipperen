@@ -56,6 +56,11 @@ reneo.Flipperen.Main = (function () {
 		}	
 
 		function update(dt) {
+			flipperBody.setPos(v(100, 100));
+			flipperBody.setVel(v(0,0));
+			flipperJointBody.setPos(v(100, 100));
+			flipperJointBody.setVel(v(0, 0));
+
 			space.step(dt);
 			for (let ball of balls) {
 				ball.updateDomPosition();
@@ -76,8 +81,10 @@ reneo.Flipperen.Main = (function () {
 			
 			flipper.css({ 'transform' : `translate(${leftFlipPos.x}px, ${640-leftFlipPos.y}px) rotate(${angle}rad)` });
 			//flipperBody.setPos(v(100, 200));
-			let flipperJointPos = flipperJointBody.getPos();
-			console.log(flipperJointPos);
+			//let flipperJointPos = flipperJointBody.getPos();
+			//console.log(flipperJointPos);
+			//flipperBody.setPos(v(100, 300));
+			//#r_flipper_body.velocity = 0, 0
 		}
 		
 		function go() {
@@ -117,33 +124,40 @@ reneo.Flipperen.Main = (function () {
 			}
 			
 			// add flipper
-			flipper = $('<svg height="60" width="160"><polygon points="0,0 160,60 160,0" style="fill:blue;stroke:purple;stroke-width:1" /></svg>');
+			flipper = $('<svg height="60" width="160"><polygon points="0,30 160,60 160,0" style="fill:blue;stroke:purple;stroke-width:1" /></svg>');
 			
 			let tris = [
-                cp.v(0, 60),
+                cp.v(0, 30),
                 cp.v(160, 60),
                 cp.v(160, 0)
             ];
 			
-			let polyMass = 1.0;
-			flipperBody = space.addBody(new cp.Body(polyMass, cp.momentForPoly(1.0, tris, v(0,0))));
-			flipperBody.setPos(v(100, 200));
+			let polyMass = 100;
+			let momentPoly = cp.momentForPoly(polyMass, tris, v(0,0));
+			momentPoly = 1385000;
+			console.log("Moment poly: " + momentPoly);
+			flipperBody = space.addBody(new cp.Body(polyMass, momentPoly));
+			flipperBody.setPos(v(100, 100));
 			
-			//let flipperShape = space.addShape(new cp.PolyShape(flipperBody, tris, v(0,0))); //space.staticBody     v(95, 150)
-			let flipperShape = space.addShape(new cp.PolyShape(space.staticBody, tris, v(95, 150))); //space.staticBody     v(95, 150)
-			flipperShape.setElasticity(0.4);
-			flipperShape.setFriction(1);
+			let flipperShape = space.addShape(new cp.PolyShape(flipperBody, tris, v(0,0))); //space.staticBody     v(95, 150)
+			//let flipperShape = space.addShape(new cp.PolyShape(space.staticBody, tris, v(95, 150))); //space.staticBody     v(95, 150)
+			//flipperShape.setElasticity(0.4);
+			//flipperShape.setFriction(1);
 			//flipperBody.setPos(v(100, 200));
 			
 			flipperJointBody = space.addBody(new cp.Body(Infinity, Infinity));
-			flipperJointBody.setPos(flipperBody.getPos());
-			flipperPinJoint = new cp.PinJoint(space.staticBody, flipperBody, cp.v(0,0), cp.v(0,0));
+			flipperJointBody.setPos(v(100, 100));
+			flipperPinJoint = new cp.PinJoint(flipperJointBody, flipperBody, cp.v(160,30), cp.v(160,30));
 			space.addConstraint(flipperPinJoint);
-			//space.addConstraint(new cp.DampedRotarySpring(flipperBody, flipperJointBody, 0.15, 20000000, 900000));
+			space.addConstraint(new cp.DampedRotarySpring(flipperBody, flipperJointBody, 0.15, 20000000, 900000));
 
 			container.append(flipper);	
 							
 			window.requestAnimationFrame(step);
+			
+			setTimeout(function() {
+				flipperJointBody.applyImpulse(40000, v(0, 0));
+			}, 3000);
 		}
 		
 		function step(timestamp) {
