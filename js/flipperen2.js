@@ -6,12 +6,20 @@ reneo.Flipperen.Main = (function () {
     "use strict";
     
     function Main(theContainer) {
-		var container,
-			balls = [],
-			startTs,
+		var GRABABLE_MASK_BIT = 1<<31,
+			NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT,
+			v = cp.v,
+			container,
+			space,
 			raf,
-			engine,
-			render;
+			startTs,
+			balls = [],
+			staticBall,
+			staticBallImage,
+			flipperBody,
+			flipper,
+			flipperJointBody,
+			flipperPinJoint;
 			
         function init() {
 			container = $(theContainer);
@@ -22,49 +30,61 @@ reneo.Flipperen.Main = (function () {
 				|| window.msRequestAnimationFrame
 				|| function(callback) {
 					return window.setTimeout(callback, 1000 / 60);
-				};
-			engine = Matter.Engine.create();
-			render = Matter.Render.create({
-				element: document.body,
-				engine: engine
-			});
-			
-			// create two boxes and a ground
-			var boxA = Matter.Bodies.circle(400, 200, 32, {
-    isStatic:false,
-    restitution: 0.95
-  });
-			var boxB = Matter.Bodies.rectangle(500, 50, 80, 80);
-			var ground = Matter.Bodies.rectangle(400, 610, 810, 60, { isStatic: true });	
-
-			// add all of the bodies to the world
-			Matter.Composite.add(engine.world, [boxA, boxB, ground]);
+				};			
         }
 		
 		function addFloor() {
+			var floor = space.addShape(new cp.SegmentShape(space.staticBody, v(0, 0), v(640, 0), 0));
+			floor.setElasticity(1);
+			floor.setFriction(1);
+			floor.setLayers(NOT_GRABABLE_MASK);
+
+			var ceiling = space.addShape(new cp.SegmentShape(space.staticBody, v(0, 640), v(640, 640), 0));
+			floor.setElasticity(1);
+			floor.setFriction(1);
+			floor.setLayers(NOT_GRABABLE_MASK);
+
+			var wall = space.addShape(new cp.SegmentShape(space.staticBody, v(0, 0), v(0, 640), 0));
+			wall.setElasticity(1);
+			wall.setFriction(1);
+			wall.setLayers(NOT_GRABABLE_MASK);
+
+			var wall2 = space.addShape(new cp.SegmentShape(space.staticBody, v(640, 0), v(640, 640), 0));
+			wall2.setElasticity(1);
+			wall2.setFriction(1);
+			wall2.setLayers(NOT_GRABABLE_MASK);
 		}	
 
 		function update(dt) {
-			Matter.Engine.update(engine, 1000 / 60);
-			//space.step(dt);
-			//for (let ball of balls) {
-			//	ball.updateDomPosition();
-			//}
+			flipperBody.setPos(v(100, 100));
+			flipperBody.setVel(v(0,0));
+			flipperJointBody.setPos(v(100, 100));
+			flipperJointBody.setVel(v(0, 0));
+
+			space.step(dt);
+			for (let ball of balls) {
+				ball.updateDomPosition();
+			}
+			
+			/*
+			let arbiters = space.arbiters;
+			for (let arbiter of arbiters) {
+				let nrContacts = arbiter.contacts.length;
+				if (arbiter.a == staticBall.ballCollisionShape || arbiter.b == staticBall.ballCollisionShape) {
+					space.removeShape(staticBall.ballCollisionShape);
+					staticBallImage.fadeOut(200, 'linear', function() { staticBallImage.remove(); });
+				}
+			}
+			//console.log(flipperBody.getPos());
+			let leftFlipPos = flipperBody.getPos();
+			let vel = flipperBody.rot;
+			let angle = 2*Math.PI - cp.v.toangle(vel);
+			
+			flipper.css({ 'transform' : `translate(${leftFlipPos.x}px, ${640-leftFlipPos.y}px) rotate(${angle}rad)` });
+			*/
 		}
 		
 		function go() {
-			// run the renderer
-			Matter.Render.run(render);
-
-			// create runner
-			//var runner = Matter.Runner.create();
-
-			// run the engine
-			//Matter.Runner.run(runner, engine);
-			
-			window.requestAnimationFrame(step);
-
-/*
 			space = new cp.Space();
 			space.iterations = 60;
 			space.gravity = v(0, -500);
@@ -135,7 +155,6 @@ reneo.Flipperen.Main = (function () {
 			setTimeout(function() {
 				flipperJointBody.applyImpulse(40000, v(0, 0));
 			}, 3000);
-			*/
 		}
 		
 		function step(timestamp) {
@@ -148,8 +167,8 @@ reneo.Flipperen.Main = (function () {
 		}
 		
 		function createBallImage() {
-			//let newBall = $('<img class="flipperbal" src="/assets/voetbal32x32.png" alt="ball" width="32" height="32">');
-			//return newBall;
+			let newBall = $('<img class="flipperbal" src="/assets/voetbal32x32.png" alt="ball" width="32" height="32">');
+			return newBall;
 		}
 
 		this.go = go;
