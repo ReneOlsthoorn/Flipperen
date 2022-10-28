@@ -15,18 +15,42 @@ reneo.Flipperen.Main = (function () {
         function init() {
 			container = $(theContainer);
         }
+		
+		function matterEngine() {
+			return engine;
+		}
 
 		function update() {
 			Matter.Engine.update(engine, 1000 / 60);
 			
 			//var bodies = Matter.Composite.allBodies(engine.world);
-			for (let ball of balls) {
+			for (const [i, ball] of balls.entries()) {
+				if (ball.isDeleted) { insertNewDynamicBall(i); }
+				if (ball.ballBody.isSleeping) {	ball.remove(); }
+				
 				ball.updateDomPosition();
 			}
 		}
 		
+		function insertNewDynamicBall(i) {
+			let ballImage = createBallImage();
+			container.append(ballImage);
+			
+			let ballBody = Matter.Bodies.circle(20 + (i * 34), 16, Ball.radius, { isStatic: false, restitution: 1.0, friction: 0.0005 });
+			
+			Matter.Composite.add(engine.world, [ ballBody ]);
+			
+			let newBall = new Ball(reneo.Flipperen.singletonMain, ballImage, ballBody);
+			if (i <= balls.length) {
+				balls[i] = newBall;
+			} else {
+				balls.push(newBall);
+			}
+		}		
+		
 		function go() {
 			engine = Matter.Engine.create();
+			engine.enableSleeping = true;
 			
 			var ground = Matter.Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 			var wallLeft = Matter.Bodies.rectangle(0, 0, 60, 1200, { isStatic: true });
@@ -34,20 +58,12 @@ reneo.Flipperen.Main = (function () {
 			Matter.Composite.add(engine.world, [ ground, wallLeft, wallRight ]);			
 			
 			// dynamische ballen
-			for (let i = 1; i < 10; i++) {
-				let ballImage = createBallImage();
-				container.append(ballImage);
-				
-				let ballBody = Matter.Bodies.circle(100 + (i * 30), 0 + (i * 40), Ball.radius, { isStatic: false, restitution: 1.0, friction: 0.0005 });
-				
-				Matter.Composite.add(engine.world, [ ballBody ]);
-				
-				let newBall = new Ball(ballImage, ballBody);
-				balls.push(newBall);
+			for (let i = 0; i < 15; i++) {
+				insertNewDynamicBall(i);
 			}
 			
 			// statische ballen
-			for (let i = 1; i < 2; i++) {
+			for (let i = 0; i < 4; i++) {
 				let ballImage = createBallImage();
 				container.append(ballImage);
 				
@@ -55,7 +71,7 @@ reneo.Flipperen.Main = (function () {
 				
 				Matter.Composite.add(engine.world, [ ballBody ]);
 				
-				let newBall = new Ball(ballImage, ballBody);
+				let newBall = new Ball(reneo.Flipperen.singletonMain, ballImage, ballBody);
 				balls.push(newBall);
 			}	
 
@@ -89,7 +105,7 @@ reneo.Flipperen.Main = (function () {
 		}
 		
 		function createBallImage() {
-			let newBall = $('<img class="flipperbal" src="/assets/voetbal32x32.png" alt="ball" width="32" height="32">');
+			let newBall = $('<img class="flipperbal" src="/assets/voetbal32x32.png" alt="ball" width="32" height="32" style="display: none">');
 			return newBall;
 		}
 		
@@ -99,6 +115,7 @@ reneo.Flipperen.Main = (function () {
 		}
 
 		this.go = go;
+		this.matterEngine = matterEngine;
                 
         init();
     };
