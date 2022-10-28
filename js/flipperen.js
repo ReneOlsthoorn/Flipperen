@@ -48,7 +48,22 @@ reneo.Flipperen.Main = (function () {
 			var ground = Matter.Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 			var wallLeft = Matter.Bodies.rectangle(0, 0, 60, 1200, { isStatic: true });
 			var wallRight = Matter.Bodies.rectangle(800, 0, 60, 1200, { isStatic: true });
-			Matter.Composite.add(engine.world, [ ground, wallLeft, wallRight ]);			
+
+			var flipperLeft = Matter.Bodies.rectangle(200, 200, 165, 32, { isStatic: true, angle: 1.00 });
+			let leftHinge = Matter.Bodies.circle(240, 341, 5, {	isStatic: true });
+			let leftStopHinge = Matter.Bodies.circle(380, 410, 5, {	isStatic: true });
+			
+			let paddle = Matter.Bodies.trapezoid(330, 360, 32, 165, 0.33, {  angle: 2.00 } );
+			
+			let leftBinding = Matter.Constraint.create({
+				bodyA: paddle,
+				pointA: { x: -90.0, y: -39.0 },
+				bodyB: leftHinge,
+				length: 0,
+				stiffness: 0.4
+			});
+
+			Matter.Composite.add(engine.world, [ ground, wallLeft, wallRight, paddle, leftHinge, leftBinding, leftStopHinge ]);
 			
 			// dynamische ballen
 			for (let i = 0; i < 15; i++) {
