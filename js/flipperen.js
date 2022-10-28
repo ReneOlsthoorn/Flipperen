@@ -37,15 +37,29 @@ reneo.Flipperen.Main = (function () {
 				let ballImage = createBallImage();
 				container.append(ballImage);
 				
-				let ballBody = Matter.Bodies.circle(100 + (i * 30), 0 + (i * 40), Ball.radius, { isStatic: false, restitution: 1.0 });
+				let ballBody = Matter.Bodies.circle(100 + (i * 30), 0 + (i * 40), Ball.radius, { isStatic: false, restitution: 1.0, friction: 0.0005 });
 				
 				Matter.Composite.add(engine.world, [ ballBody ]);
 				
 				let newBall = new Ball(ballImage, ballBody);
 				balls.push(newBall);
-			}
+			}			
 			
 			window.requestAnimationFrame(step);
+		}
+		
+		function collisionEndHandler() {
+			Events.on(engine, 'collisionEnd', function(event) {
+				var pairs = event.pairs;
+
+				// change object colours to show those ending a collision
+				for (var i = 0; i < pairs.length; i++) {
+					var pair = pairs[i];
+
+					//pair.bodyA.render.fillStyle = '#222';
+					//pair.bodyB.render.fillStyle = '#222';
+				}
+			});
 		}
 		
 		function step(timestamp) {
