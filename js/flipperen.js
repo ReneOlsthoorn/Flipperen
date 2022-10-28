@@ -33,6 +33,7 @@ reneo.Flipperen.Main = (function () {
 			var wallRight = Matter.Bodies.rectangle(800, 0, 60, 1200, { isStatic: true });
 			Matter.Composite.add(engine.world, [ ground, wallLeft, wallRight ]);			
 			
+			// dynamische ballen
 			for (let i = 1; i < 10; i++) {
 				let ballImage = createBallImage();
 				container.append(ballImage);
@@ -43,21 +44,37 @@ reneo.Flipperen.Main = (function () {
 				
 				let newBall = new Ball(ballImage, ballBody);
 				balls.push(newBall);
-			}			
+			}
+			
+			// statische ballen
+			for (let i = 1; i < 2; i++) {
+				let ballImage = createBallImage();
+				container.append(ballImage);
+				
+				let ballBody = Matter.Bodies.circle(200 + (i * 30), 400 + (i * 40), Ball.radius, { isStatic: true, restitution: 1.0, friction: 0.0005 });
+				
+				Matter.Composite.add(engine.world, [ ballBody ]);
+				
+				let newBall = new Ball(ballImage, ballBody);
+				balls.push(newBall);
+			}	
+
+			collisionEndHandler();
 			
 			window.requestAnimationFrame(step);
 		}
 		
 		function collisionEndHandler() {
-			Events.on(engine, 'collisionEnd', function(event) {
+			Matter.Events.on(engine, 'collisionEnd', function(event) {
 				var pairs = event.pairs;
 
-				// change object colours to show those ending a collision
 				for (var i = 0; i < pairs.length; i++) {
 					var pair = pairs[i];
-
-					//pair.bodyA.render.fillStyle = '#222';
-					//pair.bodyB.render.fillStyle = '#222';
+					for (let ball of balls) {
+						if (pair.bodyA === ball.ballBody || pair.bodyB === ball.ballBody) {
+							Matter.Body.setStatic(ball.ballBody, false);
+						}
+					}
 				}
 			});
 		}
