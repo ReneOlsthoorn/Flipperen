@@ -10,11 +10,20 @@ reneo.Flipperen.Main = (function () {
 			startTs,
 			balls = [],
 			engine,
+			flipperLinks,
 			render;
 
 			
         function init() {
 			container = $(theContainer);
+			document.addEventListener("keydown", function(ev) {
+				if (ev.code === 'ShiftLeft') {
+					Matter.Body.applyForce( flipperLinks, {x: flipperLinks.position.x, y: flipperLinks.position.y}, {x: 0, y: -0.2});
+				}
+				if (ev.code === 'ShiftRight') {
+					alert("ShiftRight");
+				}
+			});
         }
 
 		
@@ -51,19 +60,19 @@ reneo.Flipperen.Main = (function () {
 
 			var flipperLeft = Matter.Bodies.rectangle(200, 200, 165, 32, { isStatic: true, angle: 1.00 });
 			let leftHinge = Matter.Bodies.circle(240, 341, 5, {	isStatic: true });
-			let leftStopHinge = Matter.Bodies.circle(380, 410, 5, {	isStatic: true });
+			let leftStopHinge = Matter.Bodies.circle(380, 410, 10, { isStatic: true });
 			
-			let paddle = Matter.Bodies.trapezoid(330, 360, 32, 165, 0.33, {  angle: 2.00 } );
+			flipperLinks = Matter.Bodies.trapezoid(330, 360, 32, 165, 0.33, { angle: 2.00 } );
 			
 			let leftBinding = Matter.Constraint.create({
-				bodyA: paddle,
+				bodyA: flipperLinks,
 				pointA: { x: -90.0, y: -39.0 },
 				bodyB: leftHinge,
 				length: 0,
 				stiffness: 0.4
 			});
 
-			Matter.Composite.add(engine.world, [ ground, wallLeft, wallRight, paddle, leftHinge, leftBinding, leftStopHinge ]);
+			Matter.Composite.add(engine.world, [ ground, wallLeft, wallRight, flipperLinks, leftHinge, leftBinding, leftStopHinge ]);
 			
 			// dynamische ballen
 			for (let i = 0; i < 15; i++) {
