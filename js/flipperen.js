@@ -11,6 +11,7 @@ reneo.Flipperen.Main = (function () {
 			balls = [],
 			engine,
 			flipperLinks,
+			flipperRechts,
 			render;
 
 			
@@ -44,7 +45,7 @@ reneo.Flipperen.Main = (function () {
 		}
 		
 		function moveRightFlipper() {
-			Matter.Body.applyForce( flipperLinks, {x: flipperLinks.position.x, y: flipperLinks.position.y}, {x: 0, y: -1.7});
+			Matter.Body.applyForce( flipperRechts, {x: flipperRechts.position.x, y: flipperRechts.position.y}, {x: 0, y: -2.7});
 		}
 		
 		
@@ -54,12 +55,16 @@ reneo.Flipperen.Main = (function () {
 			
 			var render = Matter.Render.create({
 				element: document.body,
-				engine: engine
+				engine: engine,
+				options: {
+					width: 1000,
+					height: 1000
+				}
 			});
 			
-			const screenWidth = 800;
-			const screenHeight = 600;
-			const boundsThickness = 200;
+			const screenWidth = 800;   // 800
+			const screenHeight = 600;  // 600
+			const boundsThickness = 150;
 			const halfBoundsThickness = boundsThickness / 2;
 			const halfScreenWidth = screenWidth / 2;
 			const halfScreenHeight = screenHeight / 2;
@@ -70,14 +75,13 @@ reneo.Flipperen.Main = (function () {
 			var ceiling = Matter.Bodies.rectangle(halfScreenWidth, -halfBoundsThickness, screenWidth, boundsThickness, { isStatic: true });
 
 			const flipperThickness = Ball.radius * 2;
-			const flipperLinksPosY = screenHeight - 65;  // 535
+			const flipperPosY = screenHeight - 65;
 			const flipperLinksPosX = halfScreenWidth - 170;
 
-			flipperLinks = Matter.Bodies.rectangle(flipperLinksPosX, flipperLinksPosY - 40, flipperThickness, 165, { angle: 2.00, density: 0.005 } );  //Matter.Bodies.trapezoid(330, 360, 32, 165, 0.33, {  angle: 2.00, density: 0.005 } );
-			let leftHinge = Matter.Bodies.circle(flipperLinksPosX - 90, flipperLinksPosY - 59, 5, {	isStatic: true });
-			let leftStopHinge = Matter.Bodies.circle(flipperLinksPosX + 50, flipperLinksPosY + 10, 10, { isStatic: true });
-			var wandLinks = Matter.Bodies.rectangle(flipperLinksPosX - 120, flipperLinksPosY - 150, 165, 16, { isStatic: true, angle: (Math.PI / 4) });
-			//var wandLinks2 = Matter.Bodies.rectangle(0, (flipperLinksPosY - 210) /2, 16, flipperLinksPosY - 210, { isStatic: true });
+			flipperLinks = Matter.Bodies.rectangle(flipperLinksPosX, flipperPosY - 40, flipperThickness, 165, { angle: 2.00, density: 0.005 } );  //Matter.Bodies.trapezoid(330, 360, 32, 165, 0.33, {  angle: 2.00, density: 0.005 } );
+			let leftHinge = Matter.Bodies.circle(flipperLinksPosX - 90, flipperPosY - 59, 5, {	isStatic: true });
+			let leftStopHinge = Matter.Bodies.circle(flipperLinksPosX + 50, flipperPosY + 10, 10, { isStatic: true });
+			var wandLinks = Matter.Bodies.rectangle(((halfScreenWidth - 160) /2) - 60, flipperPosY - 150, halfScreenWidth - 160, 32, { isStatic: true, angle: (Math.PI / 4) });
 			
 			let leftBinding = Matter.Constraint.create({
 				bodyA: flipperLinks,
@@ -87,7 +91,24 @@ reneo.Flipperen.Main = (function () {
 				stiffness: 0.4
 			});	
 
-			Matter.Composite.add(engine.world, [ ground, wallLeft, ceiling, wallRight, flipperLinks, leftHinge, leftBinding, leftStopHinge, wandLinks ]);
+			const flipperRechtsPosX = halfScreenWidth + 170;
+
+			flipperRechts = Matter.Bodies.rectangle(flipperRechtsPosX, flipperPosY - 40, flipperThickness, 165, {  angle: -2.00, density: 0.005 } );
+			let rightHinge = Matter.Bodies.circle(flipperRechtsPosX + 90, flipperPosY - 59, 5, { isStatic: true });
+			let rightStopHinge = Matter.Bodies.circle(flipperRechtsPosX - 50, flipperPosY + 10, 10, { isStatic: true });
+
+			var wandRechts = Matter.Bodies.rectangle(screenWidth - (((halfScreenWidth - 160) /2) - 60), flipperPosY - 150, 240, 32, { isStatic: true, angle: -(Math.PI / 4) });
+			//halfScreenWidth - 160
+			
+			let rightBinding = Matter.Constraint.create({
+				bodyA: flipperRechts,
+				pointA: { x: 90.0, y: -39.0 },
+				bodyB: rightHinge,
+				length: 0,
+				stiffness: 0.4
+			});	
+
+			Matter.Composite.add(engine.world, [ ground, wallLeft, ceiling, wallRight, flipperLinks, leftHinge, leftBinding, leftStopHinge, wandLinks, flipperRechts, rightHinge, rightBinding, rightStopHinge, wandRechts ]);
 			
 			// dynamische ballen
 			for (let i = 0; i < 1; i++) {
