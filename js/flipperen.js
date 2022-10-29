@@ -17,8 +17,8 @@ reneo.Flipperen.Main = (function () {
         function init() {
 			container = $(theContainer);
 			document.addEventListener("keydown", function(ev) {
-				if (ev.code === 'ShiftLeft') { shiftLeft(); }
-				if (ev.code === 'ShiftRight') {	shiftRight(); }
+				if (ev.code === 'ArrowLeft') { moveLeftFlipper(); }
+				if (ev.code === 'ArrowRight') { moveRightFlipper(); }
 			});
         }
 
@@ -33,17 +33,17 @@ reneo.Flipperen.Main = (function () {
 			
 			for (const [i, ball] of balls.entries()) {
 				if (ball.isDeleted) { insertNewDynamicBall(i); }
-				if (ball.ballBody.isSleeping) {	ball.remove(); }
+				if (ball.ballBody.isSleeping && !ball.ballBody.isStatic) {	ball.remove(); }
 				
 				ball.updateDomPosition();
 			}
 		}
 		
-		function shiftLeft() {
+		function moveLeftFlipper() {
 			Matter.Body.applyForce( flipperLinks, {x: flipperLinks.position.x, y: flipperLinks.position.y}, {x: 0, y: -2.7});
 		}
 		
-		function shiftRight() {
+		function moveRightFlipper() {
 			Matter.Body.applyForce( flipperLinks, {x: flipperLinks.position.x, y: flipperLinks.position.y}, {x: 0, y: -1.7});
 		}
 		
@@ -69,12 +69,15 @@ reneo.Flipperen.Main = (function () {
 			var wallRight = Matter.Bodies.rectangle(screenWidth+halfBoundsThickness, halfScreenHeight, boundsThickness, screenHeight, { isStatic: true });
 			var ceiling = Matter.Bodies.rectangle(halfScreenWidth, -halfBoundsThickness, screenWidth, boundsThickness, { isStatic: true });
 
-			var wandLinks = Matter.Bodies.rectangle(210, 250, 165, 16, { isStatic: true, angle: 1.00 });
-			
-			let leftHinge = Matter.Bodies.circle(240, 341, 5, {	isStatic: true });
-			let leftStopHinge = Matter.Bodies.circle(380, 410, 10, { isStatic: true });
-			
-			flipperLinks = Matter.Bodies.trapezoid(330, 360, 32, 165, 0.33, {  angle: 2.00, density: 0.005 } );
+			const flipperThickness = Ball.radius * 2;
+			const flipperLinksPosY = screenHeight - 65;  // 535
+			const flipperLinksPosX = halfScreenWidth - 170;
+
+			flipperLinks = Matter.Bodies.rectangle(flipperLinksPosX, flipperLinksPosY - 40, flipperThickness, 165, { angle: 2.00, density: 0.005 } );  //Matter.Bodies.trapezoid(330, 360, 32, 165, 0.33, {  angle: 2.00, density: 0.005 } );
+			let leftHinge = Matter.Bodies.circle(flipperLinksPosX - 90, flipperLinksPosY - 59, 5, {	isStatic: true });
+			let leftStopHinge = Matter.Bodies.circle(flipperLinksPosX + 50, flipperLinksPosY + 10, 10, { isStatic: true });
+			var wandLinks = Matter.Bodies.rectangle(flipperLinksPosX - 120, flipperLinksPosY - 150, 165, 16, { isStatic: true, angle: (Math.PI / 4) });
+			//var wandLinks2 = Matter.Bodies.rectangle(0, (flipperLinksPosY - 210) /2, 16, flipperLinksPosY - 210, { isStatic: true });
 			
 			let leftBinding = Matter.Constraint.create({
 				bodyA: flipperLinks,
@@ -87,7 +90,7 @@ reneo.Flipperen.Main = (function () {
 			Matter.Composite.add(engine.world, [ ground, wallLeft, ceiling, wallRight, flipperLinks, leftHinge, leftBinding, leftStopHinge, wandLinks ]);
 			
 			// dynamische ballen
-			for (let i = 0; i < 15; i++) {
+			for (let i = 0; i < 1; i++) {
 				insertNewDynamicBall(i);
 			}
 			
@@ -96,7 +99,7 @@ reneo.Flipperen.Main = (function () {
 				let ballImage = createBallImage();
 				container.append(ballImage);
 				
-				let ballBody = Matter.Bodies.circle(200 + (i * 30), 400 + (i * 40), Ball.radius, { isStatic: true, restitution: 1.0, friction: 0.0005 });
+				let ballBody = Matter.Bodies.circle(400 + (i * 30), 200 + (i * 40), Ball.radius, { isStatic: true, restitution: 1.0, friction: 0.0005 });
 				
 				Matter.Composite.add(engine.world, [ ballBody ]);
 				
@@ -142,7 +145,7 @@ reneo.Flipperen.Main = (function () {
 			let ballImage = createBallImage();
 			container.append(ballImage);
 			
-			let ballBody = Matter.Bodies.circle(20 + (i * 34), 34, Ball.radius, { isStatic: false, restitution: 1.0, friction: 0.0005 });
+			let ballBody = Matter.Bodies.circle(200 + (i * 34), 34, Ball.radius, { isStatic: false, restitution: 1.0, friction: 0.0005 });
 			
 			Matter.Composite.add(engine.world, [ ballBody ]);
 			
