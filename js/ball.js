@@ -34,6 +34,6 @@ class Ball {
 		}
 		this.beingRemoved = true;
 		Matter.Composite.remove(this.parentObj.matterEngine().world, this.ballBody);
-		this.ballImage.fadeOut('linear', () => { this.isDeleted = true; theBallImage.remove(); });
+		this.ballImage.fadeOut('linear', () => { this.isDeleted = true; this.ballImage.remove(); });
 	}
 }

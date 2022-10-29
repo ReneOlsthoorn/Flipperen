@@ -17,12 +17,8 @@ reneo.Flipperen.Main = (function () {
         function init() {
 			container = $(theContainer);
 			document.addEventListener("keydown", function(ev) {
-				if (ev.code === 'ShiftLeft') {
-					Matter.Body.applyForce( flipperLinks, {x: flipperLinks.position.x, y: flipperLinks.position.y}, {x: 0, y: -0.2});
-				}
-				if (ev.code === 'ShiftRight') {
-					alert("ShiftRight");
-				}
+				if (ev.code === 'ShiftLeft') { shiftLeft(); }
+				if (ev.code === 'ShiftRight') {	shiftRight(); }
 			});
         }
 
@@ -35,13 +31,20 @@ reneo.Flipperen.Main = (function () {
 		function update() {
 			Matter.Engine.update(engine, 1000 / 60);
 			
-			//var bodies = Matter.Composite.allBodies(engine.world);
 			for (const [i, ball] of balls.entries()) {
 				if (ball.isDeleted) { insertNewDynamicBall(i); }
 				if (ball.ballBody.isSleeping) {	ball.remove(); }
 				
 				ball.updateDomPosition();
 			}
+		}
+		
+		function shiftLeft() {
+			Matter.Body.applyForce( flipperLinks, {x: flipperLinks.position.x, y: flipperLinks.position.y}, {x: 0, y: -2.7});
+		}
+		
+		function shiftRight() {
+			Matter.Body.applyForce( flipperLinks, {x: flipperLinks.position.x, y: flipperLinks.position.y}, {x: 0, y: -1.7});
 		}
 		
 		
@@ -54,15 +57,24 @@ reneo.Flipperen.Main = (function () {
 				engine: engine
 			});
 			
-			var ground = Matter.Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-			var wallLeft = Matter.Bodies.rectangle(0, 0, 60, 1200, { isStatic: true });
-			var wallRight = Matter.Bodies.rectangle(800, 0, 60, 1200, { isStatic: true });
+			const screenWidth = 800;
+			const screenHeight = 600;
+			const boundsThickness = 200;
+			const halfBoundsThickness = boundsThickness / 2;
+			const halfScreenWidth = screenWidth / 2;
+			const halfScreenHeight = screenHeight / 2;
+			
+			var ground = Matter.Bodies.rectangle(halfScreenWidth, screenHeight + halfBoundsThickness, screenWidth, boundsThickness, { isStatic: true });
+			var wallLeft = Matter.Bodies.rectangle(-halfBoundsThickness, halfScreenHeight, boundsThickness, screenHeight, { isStatic: true });
+			var wallRight = Matter.Bodies.rectangle(screenWidth+halfBoundsThickness, halfScreenHeight, boundsThickness, screenHeight, { isStatic: true });
+			var ceiling = Matter.Bodies.rectangle(halfScreenWidth, -halfBoundsThickness, screenWidth, boundsThickness, { isStatic: true });
 
-			var flipperLeft = Matter.Bodies.rectangle(200, 200, 165, 32, { isStatic: true, angle: 1.00 });
+			var wandLinks = Matter.Bodies.rectangle(210, 250, 165, 16, { isStatic: true, angle: 1.00 });
+			
 			let leftHinge = Matter.Bodies.circle(240, 341, 5, {	isStatic: true });
 			let leftStopHinge = Matter.Bodies.circle(380, 410, 10, { isStatic: true });
 			
-			flipperLinks = Matter.Bodies.trapezoid(330, 360, 32, 165, 0.33, { angle: 2.00 } );
+			flipperLinks = Matter.Bodies.trapezoid(330, 360, 32, 165, 0.33, {  angle: 2.00, density: 0.005 } );
 			
 			let leftBinding = Matter.Constraint.create({
 				bodyA: flipperLinks,
@@ -70,9 +82,9 @@ reneo.Flipperen.Main = (function () {
 				bodyB: leftHinge,
 				length: 0,
 				stiffness: 0.4
-			});
+			});	
 
-			Matter.Composite.add(engine.world, [ ground, wallLeft, wallRight, flipperLinks, leftHinge, leftBinding, leftStopHinge ]);
+			Matter.Composite.add(engine.world, [ ground, wallLeft, ceiling, wallRight, flipperLinks, leftHinge, leftBinding, leftStopHinge, wandLinks ]);
 			
 			// dynamische ballen
 			for (let i = 0; i < 15; i++) {
@@ -130,7 +142,7 @@ reneo.Flipperen.Main = (function () {
 			let ballImage = createBallImage();
 			container.append(ballImage);
 			
-			let ballBody = Matter.Bodies.circle(20 + (i * 34), 16, Ball.radius, { isStatic: false, restitution: 1.0, friction: 0.0005 });
+			let ballBody = Matter.Bodies.circle(20 + (i * 34), 34, Ball.radius, { isStatic: false, restitution: 1.0, friction: 0.0005 });
 			
 			Matter.Composite.add(engine.world, [ ballBody ]);
 			
