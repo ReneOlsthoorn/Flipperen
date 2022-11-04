@@ -126,7 +126,9 @@ reneo.Flipperen.Main = (function () {
 				
 				let newBall = new Ball(reneo.Flipperen.singletonMain, ballImage, ballBody);
 				balls.push(newBall);
-			}	
+			}
+			
+			createFlipperInDOM();
 
 			collisionEndHandler();
 			
@@ -180,13 +182,14 @@ reneo.Flipperen.Main = (function () {
 		
 		
 		function createBallImage() {
-			let newBall = $('<img class="flipperbal" src="/assets/voetbal32x32.png" alt="ball" width="32" height="32" style="display: none">');
+			let newBall = $('<div style="position: absolute; left: -16px; top: -16px; display: none; width: 32px; height: 32px;"><img class="flipperbal" src="/assets/voetbal32x32.png" alt="ball" width="32" height="32"></div>');
 			return newBall;
 		}
 		
 		
 		function createFlipperInDOM() {
-			flipper = $('<svg height="60" width="160"><polygon points="0,30 160,60 160,0" style="fill:blue;stroke:purple;stroke-width:1" /></svg>');
+			let flipper = $('<div style="background-color: blue; display: inline-block; position: absolute; left: 100px; width: 100px; height: 100px"></div>');
+			//let flipper = $('<svg height="60" width="160"><polygon points="0,30 160,60 160,0" style="fill:blue;stroke:purple;stroke-width:1" /></svg>');
 			container.append(flipper);
 		}
 
