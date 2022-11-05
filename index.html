@@ -7,24 +7,18 @@
 	<!--base href="http://www.vergeestelijking.nl/bombsweeper/" -->
     <title>Flipperen</title>
 
-    <!-- 1: De website icon -->
-    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
-
     <!-- 2: De css bestanden -->
     <link href="css/gui.css" media="screen" rel="stylesheet" type="text/css">
 
     <!-- 3: De javascript bestanden van externe partijen -->
-    <!--<script src="javascript/extern/prototypes.js" type="text/javascript"></script>-->
     <script src="js/extern/jquery-3.6.0.min.js" type="text/javascript"></script>
 	<script src="js/extern/matter.min.js" type="text/javascript"></script>
 
     <!-- 5: De applicatie javascript bestanden -->
     <script src="js/ball.js" type="text/javascript"></script>
-    <script src="js/staticball.js" type="text/javascript"></script>
     <script src="js/flipperen.js" type="text/javascript"></script>
 </head>
 <body style="overflow: hidden">
-<div id="messageDiv" style="z-index:999;"></div>
 <script type="text/javascript">
 	$(function() {
         reneo.Flipperen.singletonMain = new reneo.Flipperen.Main(document.body);
