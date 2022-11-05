@@ -79,13 +79,13 @@ reneo.Flipperen.Main = (function () {
 				element: document.body,
 				engine: engine,
 				options: {
-					width: 1000,
-					height: 1000
+					width: document.body.clientWidth,
+					height: document.body.clientHeight
 				}
 			});
 			
-			const screenWidth = 800;   // 800
-			const screenHeight = 600;  // 600
+			const screenWidth = document.body.clientWidth;   // 800
+			const screenHeight = document.body.clientHeight;  // 600
 			const boundsThickness = 150;
 			const halfBoundsThickness = boundsThickness / 2;
 			const halfScreenWidth = screenWidth / 2;
@@ -98,12 +98,12 @@ reneo.Flipperen.Main = (function () {
 
 			const flipperThickness = Ball.radius * 2;
 			const flipperPosY = screenHeight - 65;
-			const flipperLinksPosX = halfScreenWidth - 170;
+			const flipperLinksPosX = halfScreenWidth - 126;
 
 			flipperLinks = Matter.Bodies.rectangle(flipperLinksPosX, flipperPosY - 40, flipperThickness, 165, { angle: 2.00, density: 0.005 } );  //Matter.Bodies.trapezoid(330, 360, 32, 165, 0.33, {  angle: 2.00, density: 0.005 } );
 			let leftHinge = Matter.Bodies.circle(flipperLinksPosX - 90, flipperPosY - 59, 5, {	isStatic: true });
 			let leftStopHinge = Matter.Bodies.circle(flipperLinksPosX + 50, flipperPosY + 10, 10, { isStatic: true });
-			wandLinks = Matter.Bodies.rectangle(((halfScreenWidth - 160) /2) - 60 - 250, flipperPosY - 150 -250, 960, 32, { isStatic: true, angle: (Math.PI / 4) });
+			wandLinks = Matter.Bodies.rectangle(flipperLinksPosX-420, flipperPosY - 150 -250, 960, 32, { isStatic: true, angle: (Math.PI / 4) });
 			
 			let leftBinding = Matter.Constraint.create({
 				bodyA: flipperLinks,
@@ -113,12 +113,12 @@ reneo.Flipperen.Main = (function () {
 				stiffness: 0.4
 			});	
 
-			const flipperRechtsPosX = halfScreenWidth + 170;
+			const flipperRechtsPosX = halfScreenWidth + 126;
 
 			flipperRechts = Matter.Bodies.rectangle(flipperRechtsPosX, flipperPosY - 40, flipperThickness, 165, {  angle: -2.00, density: 0.005 } );
 			let rightHinge = Matter.Bodies.circle(flipperRechtsPosX + 90, flipperPosY - 59, 5, { isStatic: true });
 			let rightStopHinge = Matter.Bodies.circle(flipperRechtsPosX - 50, flipperPosY + 10, 10, { isStatic: true });
-			wandRechts = Matter.Bodies.rectangle(screenWidth - (((halfScreenWidth - 160) /2) - 60) + 250, flipperPosY - 150 - 250, 960, 32, { isStatic: true, angle: -(Math.PI / 4) });
+			wandRechts = Matter.Bodies.rectangle(flipperRechtsPosX+420, flipperPosY - 150 - 250, 960, 32, { isStatic: true, angle: -(Math.PI / 4) });
 			
 			let rightBinding = Matter.Constraint.create({
 				bodyA: flipperRechts,
