@@ -11,7 +11,13 @@ reneo.Flipperen.Main = (function () {
 			balls = [],
 			engine,
 			flipperLinks,
+			domFlipperLinks,
+			domFlipperRechts,
+			domWandRechts,
+			domWandLinks,
 			flipperRechts,
+			wandLinks,
+			wandRechts,
 			render;
 
 			
@@ -38,6 +44,22 @@ reneo.Flipperen.Main = (function () {
 				
 				ball.updateDomPosition();
 			}
+			
+			let newPos = flipperLinks.position;
+			let newAngle = flipperLinks.angle;
+			domFlipperLinks.css({ 'transform' : `translate(${newPos.x}px, ${newPos.y}px) rotate(${newAngle}rad)` });
+
+			newPos = flipperRechts.position;
+			newAngle = flipperRechts.angle;
+			domFlipperRechts.css({ 'transform' : `translate(${newPos.x}px, ${newPos.y}px) rotate(${newAngle}rad)` });
+			
+			newPos = wandRechts.position;
+			newAngle = wandRechts.angle;
+			domWandRechts.css({ 'transform' : `translate(${newPos.x}px, ${newPos.y}px) rotate(${newAngle}rad)` });
+			
+			newPos = wandLinks.position;
+			newAngle = wandLinks.angle;
+			domWandLinks.css({ 'transform' : `translate(${newPos.x}px, ${newPos.y}px) rotate(${newAngle}rad)` });				
 		}
 		
 		function moveLeftFlipper() {
@@ -81,7 +103,7 @@ reneo.Flipperen.Main = (function () {
 			flipperLinks = Matter.Bodies.rectangle(flipperLinksPosX, flipperPosY - 40, flipperThickness, 165, { angle: 2.00, density: 0.005 } );  //Matter.Bodies.trapezoid(330, 360, 32, 165, 0.33, {  angle: 2.00, density: 0.005 } );
 			let leftHinge = Matter.Bodies.circle(flipperLinksPosX - 90, flipperPosY - 59, 5, {	isStatic: true });
 			let leftStopHinge = Matter.Bodies.circle(flipperLinksPosX + 50, flipperPosY + 10, 10, { isStatic: true });
-			var wandLinks = Matter.Bodies.rectangle(((halfScreenWidth - 160) /2) - 60, flipperPosY - 150, halfScreenWidth - 160, 32, { isStatic: true, angle: (Math.PI / 4) });
+			wandLinks = Matter.Bodies.rectangle(((halfScreenWidth - 160) /2) - 60 - 250, flipperPosY - 150 -250, 960, 32, { isStatic: true, angle: (Math.PI / 4) });
 			
 			let leftBinding = Matter.Constraint.create({
 				bodyA: flipperLinks,
@@ -96,9 +118,7 @@ reneo.Flipperen.Main = (function () {
 			flipperRechts = Matter.Bodies.rectangle(flipperRechtsPosX, flipperPosY - 40, flipperThickness, 165, {  angle: -2.00, density: 0.005 } );
 			let rightHinge = Matter.Bodies.circle(flipperRechtsPosX + 90, flipperPosY - 59, 5, { isStatic: true });
 			let rightStopHinge = Matter.Bodies.circle(flipperRechtsPosX - 50, flipperPosY + 10, 10, { isStatic: true });
-
-			var wandRechts = Matter.Bodies.rectangle(screenWidth - (((halfScreenWidth - 160) /2) - 60), flipperPosY - 150, 240, 32, { isStatic: true, angle: -(Math.PI / 4) });
-			//halfScreenWidth - 160
+			wandRechts = Matter.Bodies.rectangle(screenWidth - (((halfScreenWidth - 160) /2) - 60) + 250, flipperPosY - 150 - 250, 960, 32, { isStatic: true, angle: -(Math.PI / 4) });
 			
 			let rightBinding = Matter.Constraint.create({
 				bodyA: flipperRechts,
@@ -128,8 +148,15 @@ reneo.Flipperen.Main = (function () {
 				balls.push(newBall);
 			}
 			
-			createFlipperInDOM();
+			domFlipperLinks = createFlipperInDOM();
+			domFlipperRechts = createFlipperInDOM();
+			
+			domWandRechts = $('<div style="background-color: #0000cc; display: inline-block; position: absolute; left: -480px; top: -16px; width: 960px; height: 32px"></div>');
+			container.append(domWandRechts);
 
+			domWandLinks = $('<div style="background-color: #0000cc; display: inline-block; position: absolute; left: -480px; top: -16px; width: 960px; height: 32px"></div>');
+			container.append(domWandLinks);			
+			
 			collisionEndHandler();
 			
 			Matter.Render.run(render);
@@ -188,9 +215,10 @@ reneo.Flipperen.Main = (function () {
 		
 		
 		function createFlipperInDOM() {
-			let flipper = $('<div style="background-color: blue; display: inline-block; position: absolute; left: 100px; width: 100px; height: 100px"></div>');
+			let flipper = $('<div style="background-color: blue; display: inline-block; position: absolute; left: -16px; top: -82.5px; width: 32px; height: 165px"></div>');
 			//let flipper = $('<svg height="60" width="160"><polygon points="0,30 160,60 160,0" style="fill:blue;stroke:purple;stroke-width:1" /></svg>');
 			container.append(flipper);
+			return flipper;
 		}
 
 
